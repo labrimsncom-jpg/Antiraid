@@ -6,8 +6,8 @@
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("protection")
-    .setDescription("Afficher l'état des protections")
+    .setName("modlogs")
+    .setDescription("Afficher la configuration des logs")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild.toString()),
 
   async execute(interaction) {
@@ -19,20 +19,23 @@ module.exports = {
     }
 
     const embed = new EmbedBuilder()
-      .setTitle("🛡️ Protections du serveur")
+      .setTitle("📋 Modération & Logs")
       .setDescription(
         [
-          "🟢 **Anti-Raid** — Disponible",
-          "🟢 **Anti-Spam** — Actif",
-          "🟢 **Anti-Link** — Actif",
-          "🟢 **Anti-Mass Mention** — Actif",
-          "🟢 **Protection Anti-Bot** — Active",
-          "🟢 **Protection des permissions** — Active",
+          "📌 **Événements surveillés**",
+          "• 🔨 Bannissements",
+          "• 👢 Expulsions",
+          "• 🔇 Mutes",
+          "• ⚠️ Avertissements",
+          "• 🗑️ Messages supprimés",
+          "• ✏️ Modifications du serveur",
+          "• 👋 Arrivées et départs",
           "",
-          "⚙️ Utilise `/raidmode` pour gérer le mode raid."
+          "⚙️ Cette commande affiche l'état du système de logs."
         ].join("\n")
       )
-      .setColor(0x57F287)
+      .setColor(0xFEE75C)
+      .setFooter({ text: "Server Manager — Holy RP" })
       .setTimestamp();
 
     await interaction.reply({

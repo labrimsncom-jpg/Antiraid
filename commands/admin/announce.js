@@ -6,8 +6,15 @@
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("protection")
-    .setDescription("Afficher l'état des protections")
+    .setName("announce")
+    .setDescription("Envoyer une annonce")
+    .addStringOption(option =>
+      option
+        .setName("message")
+        .setDescription("Message de l'annonce")
+        .setRequired(true)
+        .setMaxLength(4000)
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild.toString()),
 
   async execute(interaction) {
@@ -18,25 +25,19 @@ module.exports = {
       });
     }
 
+    const message = interaction.options.getString("message");
+
     const embed = new EmbedBuilder()
-      .setTitle("🛡️ Protections du serveur")
-      .setDescription(
-        [
-          "🟢 **Anti-Raid** — Disponible",
-          "🟢 **Anti-Spam** — Actif",
-          "🟢 **Anti-Link** — Actif",
-          "🟢 **Anti-Mass Mention** — Actif",
-          "🟢 **Protection Anti-Bot** — Active",
-          "🟢 **Protection des permissions** — Active",
-          "",
-          "⚙️ Utilise `/raidmode` pour gérer le mode raid."
-        ].join("\n")
-      )
-      .setColor(0x57F287)
+      .setTitle("📢 ANNONCE")
+      .setDescription(message)
+      .setColor(0x5865F2)
+      .setFooter({ text: `Annonce par ${interaction.user.tag}` })
       .setTimestamp();
 
+    await interaction.channel.send({ embeds: [embed] });
+
     await interaction.reply({
-      embeds: [embed],
+      content: "✅ Annonce envoyée.",
       ephemeral: true
     });
   }
