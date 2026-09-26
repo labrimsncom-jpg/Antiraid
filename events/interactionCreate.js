@@ -1,4 +1,7 @@
-﻿const { Events, MessageFlags } = require("discord.js");
+﻿const {
+  Events,
+  MessageFlags
+} = require("discord.js");
 
 const {
   handleTicketInteraction
@@ -22,9 +25,10 @@ module.exports = {
           });
         }
 
-        const command = interaction.client.commands.get(
-          interaction.commandName
-        );
+        const command =
+          interaction.client.commands.get(
+            interaction.commandName
+          );
 
         if (command) {
           await command.execute(interaction);
@@ -42,11 +46,7 @@ module.exports = {
       ) {
         const id = interaction.customId || "";
 
-        if (
-          id.startsWith("ticket_") ||
-          id === "ticket_open" ||
-          id === "ticket_close"
-        ) {
+        if (id.startsWith("ticket_")) {
           await handleTicketInteraction(interaction);
           return;
         }
@@ -56,14 +56,20 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.error("Erreur interaction :", error);
+      console.error(
+        "Erreur interaction :",
+        error
+      );
 
       const payload = {
         content: "❌ Une erreur est survenue.",
         flags: MessageFlags.Ephemeral
       };
 
-      if (interaction.replied || interaction.deferred) {
+      if (
+        interaction.replied ||
+        interaction.deferred
+      ) {
         await interaction
           .followUp(payload)
           .catch(() => {});

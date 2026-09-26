@@ -9,7 +9,7 @@ const { showTicketConfig } = require("../../utils/tickets");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("ticket-config")
-    .setDescription("Configurer le système de panneaux de tickets Holy RP")
+    .setDescription("Configurer le système de tickets Holy RP")
     .setDefaultMemberPermissions(
       PermissionFlagsBits.ManageGuild.toString()
     ),
