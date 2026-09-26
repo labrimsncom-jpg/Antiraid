@@ -1,71 +1,77 @@
+﻿const { Events, MessageFlags } = require("discord.js");
+
 const {
-  PermissionFlagsBits,
-  MessageFlags,
-} = require("discord.js");
+  handleTicketInteraction
+} = require("../utils/tickets");
+
+const {
+  joinGiveaway
+} = require("../utils/giveaways");
 
 module.exports = {
-  name: "interactionCreate",
+  name: Events.InteractionCreate,
 
   async execute(interaction) {
-    // Gestion des commandes Slash
-    if (!interaction.isChatInputCommand()) return;
-
-    const command = interaction.client.commands.get(
-      interaction.commandName
-    );
-
-    if (!command) {
-      return interaction.reply({
-        content: "❌ Cette commande n'existe pas.",
-        flags: MessageFlags.Ephemeral,
-      });
-    }
-
-    // Vérification du serveur
-    if (!interaction.guild) {
-      return interaction.reply({
-        content: "❌ Cette commande doit être utilisée sur un serveur.",
-        flags: MessageFlags.Ephemeral,
-      });
-    }
-
-    // Vérification des permissions configurées dans la commande
-    const requiredPermissions =
-      command.data.default_member_permissions;
-
-    if (requiredPermissions) {
-      const hasPermission =
-        interaction.member.permissions.has(requiredPermissions);
-
-      if (!hasPermission) {
-        return interaction.reply({
-          content:
-            "❌ Tu n'as pas les permissions nécessaires pour utiliser cette commande.",
-          flags: MessageFlags.Ephemeral,
-        });
-      }
-    }
-
-    // Exécution sécurisée de la commande
     try {
-      await command.execute(interaction);
-    } catch (error) {
-      console.error(
-        `Erreur dans la commande /${interaction.commandName} :`,
-        error
-      );
+      if (interaction.isChatInputCommand()) {
+        if (!interaction.inGuild()) {
+          return interaction.reply({
+            content:
+              "❌ Cette commande fonctionne uniquement dans un serveur.",
+            flags: MessageFlags.Ephemeral
+          });
+        }
 
-      const message = {
-        content:
-          "❌ Une erreur est survenue pendant l'exécution de la commande.",
-        flags: MessageFlags.Ephemeral,
+        const command = interaction.client.commands.get(
+          interaction.commandName
+        );
+
+        if (command) {
+          await command.execute(interaction);
+        }
+
+        return;
+      }
+
+      if (
+        interaction.isButton() ||
+        interaction.isStringSelectMenu() ||
+        interaction.isChannelSelectMenu() ||
+        interaction.isRoleSelectMenu() ||
+        interaction.isModalSubmit()
+      ) {
+        const id = interaction.customId || "";
+
+        if (
+          id.startsWith("ticket_") ||
+          id === "ticket_open" ||
+          id === "ticket_close"
+        ) {
+          await handleTicketInteraction(interaction);
+          return;
+        }
+
+        if (id.startsWith("gw_join:")) {
+          await joinGiveaway(interaction);
+        }
+      }
+    } catch (error) {
+      console.error("Erreur interaction :", error);
+
+      const payload = {
+        content: "❌ Une erreur est survenue.",
+        flags: MessageFlags.Ephemeral
       };
 
       if (interaction.replied || interaction.deferred) {
-        await interaction.followUp(message).catch(console.error);
+        await interaction
+          .followUp(payload)
+          .catch(() => {});
       } else {
-        await interaction.reply(message).catch(console.error);
+        await interaction
+          .reply(payload)
+          .catch(() => {});
       }
     }
-  },
+  }
 };
