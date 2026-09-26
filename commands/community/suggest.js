@@ -1,12 +1,25 @@
-﻿const { SlashCommandBuilder, MessageFlags, EmbedBuilder } = require("discord.js");
-const { createSuggestion, settings } = require("../../utils/holy");
+﻿const {
+  SlashCommandBuilder,
+  MessageFlags,
+  EmbedBuilder,
+} = require("discord.js");
+
+const {
+  createSuggestion,
+  settings,
+} = require("../../utils/holy");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("suggest")
     .setDescription("Envoyer une suggestion")
     .addStringOption((o) =>
-      o.setName("idee").setDescription("Ta suggestion").setMinLength(5).setMaxLength(1000).setRequired(true)
+      o
+        .setName("idee")
+        .setDescription("Ta suggestion")
+        .setMinLength(5)
+        .setMaxLength(1000)
+        .setRequired(true)
     ),
 
   async execute(interaction) {
@@ -15,12 +28,13 @@ module.exports = {
 
     if (!channelId) {
       return interaction.reply({
-        content: "Le salon des suggestions n'est pas configure. Utilise /holy-config suggestions.",
+        content: "Le salon des suggestions n'est pas configure. Utilise /config suggestions.",
         flags: MessageFlags.Ephemeral,
       });
     }
 
     const channel = interaction.guild.channels.cache.get(channelId);
+
     if (!channel) {
       return interaction.reply({
         content: "Le salon des suggestions configure est introuvable.",
@@ -39,9 +53,21 @@ module.exports = {
       .setTitle(`Suggestion #${item.id}`)
       .setDescription(item.text)
       .addFields(
-        { name: "Auteur", value: `${interaction.user}`, inline: true },
-        { name: "Votes", value: "0 pour / 0 contre", inline: true },
-        { name: "Statut", value: "En attente", inline: true }
+        {
+          name: "Auteur",
+          value: `${interaction.user}`,
+          inline: true,
+        },
+        {
+          name: "Votes",
+          value: "0 pour / 0 contre",
+          inline: true,
+        },
+        {
+          name: "Statut",
+          value: "En attente",
+          inline: true,
+        }
       )
       .setTimestamp();
 
@@ -51,8 +77,18 @@ module.exports = {
         {
           type: 1,
           components: [
-            { type: 2, custom_id: `holy_suggest_up:${item.id}`, label: "Pour", style: 3 },
-            { type: 2, custom_id: `holy_suggest_down:${item.id}`, label: "Contre", style: 4 },
+            {
+              type: 2,
+              custom_id: `suggest_up:${item.id}`,
+              label: "Pour",
+              style: 3,
+            },
+            {
+              type: 2,
+              custom_id: `suggest_down:${item.id}`,
+              label: "Contre",
+              style: 4,
+            },
           ],
         },
       ],
