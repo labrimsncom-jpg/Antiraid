@@ -38,16 +38,22 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
+
+    if (!interaction.memberPermissions?.has(
+      PermissionFlagsBits.ManageGuild
+    )) {
       return interaction.reply({
-        content: "❌ Tu dois avoir la permission **Gérer le serveur**.",
+        content: "âŒ Tu dois avoir la permission **GÃ©rer le serveur**.",
         ephemeral: true
       });
     }
 
-    if (!interaction.guild.members.me?.permissions.has("ManageGuildExpressions")) {
+    const me = interaction.guild.members.me;
+
+    if (!me.permissions.has("ManageGuildExpressions")) {
       return interaction.reply({
-        content: "❌ Le bot doit avoir la permission **Gérer les expressions**.",
+        content:
+          "âŒ Le bot doit avoir la permission **GÃ©rer les expressions**.",
         ephemeral: true
       });
     }
@@ -63,10 +69,14 @@ module.exports = {
     const results = [];
 
     for (const name of EMOJIS) {
-      const file = path.join(emojiDir, `${name}.png`);
+
+      const file = path.join(
+        emojiDir,
+        `${name}.png`
+      );
 
       if (!fs.existsSync(file)) {
-        results.push(`⚠️ ${name} : image manquante`);
+        results.push(`âš ï¸ ${name} : image introuvable`);
         continue;
       }
 
@@ -75,26 +85,37 @@ module.exports = {
       );
 
       if (existing) {
-        results.push(`ℹ️ ${name} : déjà installé`);
+        results.push(`â„¹ï¸ ${name} : dÃ©jÃ  prÃ©sent`);
         continue;
       }
 
       try {
+
         const emoji = await interaction.guild.emojis.create({
           attachment: file,
           name
         });
 
-        results.push(`✅ ${name} : <:${emoji.name}:${emoji.id}>`);
+        results.push(
+          `âœ… ${name} : <:${emoji.name}:${emoji.id}>`
+        );
+
       } catch (error) {
-        console.error(`Erreur ${name}:`, error);
-        results.push(`❌ ${name} : erreur`);
+
+        console.error(
+          `Erreur crÃ©ation ${name}:`,
+          error
+        );
+
+        results.push(
+          `âŒ ${name} : impossible Ã  crÃ©er`
+        );
       }
     }
 
     await interaction.editReply({
       content:
-        "🎨 **Installation des emojis Holy RP**\n\n" +
+        "ðŸŽ¨ **Installation des emojis Holy RP terminÃ©e !**\n\n" +
         results.join("\n")
     });
   }
