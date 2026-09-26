@@ -20,7 +20,7 @@ module.exports = {
         if (!interaction.inGuild()) {
           return interaction.reply({
             content:
-              "❌ Cette commande fonctionne uniquement dans un serveur.",
+              "Cette commande fonctionne uniquement dans un serveur.",
             flags: MessageFlags.Ephemeral
           });
         }
@@ -62,7 +62,7 @@ module.exports = {
       );
 
       const payload = {
-        content: "❌ Une erreur est survenue.",
+        content: "Une erreur est survenue.",
         flags: MessageFlags.Ephemeral
       };
 

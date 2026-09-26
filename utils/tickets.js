@@ -37,25 +37,24 @@ function getSettings(guildId) {
 function buildTicketPanel() {
   const embed = new EmbedBuilder()
     .setColor(COLORS.primary)
-    .setTitle("🎫 Support — Holy RP")
+    .setTitle("Support - Holy RP")
     .setDescription(
       [
         "Besoin d'aide ?",
         "",
         "Clique sur le bouton ci-dessous pour ouvrir un ticket.",
         "",
-        "🔒 Ton ticket sera visible uniquement par toi et l'équipe de support."
+        "Ton ticket sera visible uniquement par toi et l'equipe de support."
       ].join("\n")
     )
     .setFooter({
-      text: "Holy RP • Support"
+      text: "Holy RP - Support"
     });
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("ticket_open")
       .setLabel("Ouvrir un ticket")
-      .setEmoji("🎫")
       .setStyle(ButtonStyle.Primary)
   );
 
@@ -70,34 +69,33 @@ async function showTicketConfig(interaction) {
 
   const categoryText = settings.ticketCategoryId
     ? `<#${settings.ticketCategoryId}>`
-    : "Non configurée";
+    : "Non configuree";
 
   const roleText = settings.ticketRoleId
     ? `<@&${settings.ticketRoleId}>`
-    : "Non configuré";
+    : "Non configure";
 
   const embed = new EmbedBuilder()
     .setColor(COLORS.primary)
-    .setTitle("🎫 Configuration des tickets — Holy RP")
+    .setTitle("Configuration des tickets - Holy RP")
     .setDescription(
       [
-        "Configure et publie le système de tickets.",
+        "Configure et publie le systeme de tickets.",
         "",
-        `📁 **Catégorie :** ${categoryText}`,
-        `👥 **Rôle support :** ${roleText}`,
+        `Categorie : ${categoryText}`,
+        `Role support : ${roleText}`,
         "",
         "Utilise le bouton ci-dessous pour publier le panneau de tickets."
       ].join("\n")
     )
     .setFooter({
-      text: "Holy RP • Ticket System"
+      text: "Holy RP - Ticket System"
     });
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("ticket_config_send")
       .setLabel("Envoyer le panneau")
-      .setEmoji("📨")
       .setStyle(ButtonStyle.Success)
   );
 
@@ -115,7 +113,7 @@ async function sendTicketPanel(interaction) {
 
   return interaction.reply({
     embeds: [
-      ok("Le panneau de tickets a été envoyé dans ce salon.")
+      ok("Le panneau de tickets a ete envoye dans ce salon.")
     ],
     flags: MessageFlags.Ephemeral
   });
@@ -123,7 +121,6 @@ async function sendTicketPanel(interaction) {
 
 async function openTicket(interaction) {
   const { guild, user } = interaction;
-
   const settings = getSettings(guild.id);
 
   await interaction.deferReply({
@@ -137,7 +134,7 @@ async function openTicket(interaction) {
   if (existing) {
     return interaction.editReply({
       embeds: [
-        fail(`Tu as déjà un ticket ouvert : ${existing}`)
+        fail(`Tu as deja un ticket ouvert : ${existing}`)
       ]
     });
   }
@@ -146,7 +143,7 @@ async function openTicket(interaction) {
     return interaction.editReply({
       embeds: [
         fail(
-          "Il me faut la permission **Gérer les salons** pour créer un ticket."
+          "Il me faut la permission Gerer les salons pour creer un ticket."
         )
       ]
     });
@@ -189,16 +186,15 @@ async function openTicket(interaction) {
 
   const embed = new EmbedBuilder()
     .setColor(COLORS.primary)
-    .setTitle("🎫 Ticket ouvert")
+    .setTitle("Ticket ouvert")
     .setDescription(
-      "Explique ton problème en détail, l'équipe va te répondre dès que possible.\n\nQuand c'est réglé, clique sur **Fermer le ticket**."
+      "Explique ton probleme en detail, l'equipe va te repondre des que possible.\n\nQuand c'est regle, clique sur Fermer le ticket."
     );
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("ticket_close")
       .setLabel("Fermer le ticket")
-      .setEmoji("🔒")
       .setStyle(ButtonStyle.Danger)
   );
 
@@ -228,7 +224,7 @@ async function openTicket(interaction) {
     guild,
     new EmbedBuilder()
       .setColor(COLORS.success)
-      .setTitle("🎫 Ticket ouvert")
+      .setTitle("Ticket ouvert")
       .setDescription(`${channel} par ${user}`)
       .setTimestamp()
   );
@@ -252,7 +248,6 @@ async function closeTicket(interaction) {
   }
 
   const ownerId = channel.topic.split(":")[1];
-
   const { ticketRoleId } = getSettings(guild.id);
 
   const allowed =
@@ -274,9 +269,7 @@ async function closeTicket(interaction) {
 
   await interaction.reply({
     embeds: [
-      ok(
-        "Ticket fermé. Suppression du salon dans 5 secondes…"
-      )
+      ok("Ticket ferme. Suppression du salon dans 5 secondes...")
     ]
   });
 
@@ -284,9 +277,9 @@ async function closeTicket(interaction) {
     guild,
     new EmbedBuilder()
       .setColor(COLORS.error)
-      .setTitle("🔒 Ticket fermé")
+      .setTitle("Ticket ferme")
       .setDescription(
-        `\`#${channel.name}\` fermé par ${user}`
+        `#${channel.name} ferme par ${user}`
       )
       .setTimestamp()
   );
@@ -294,7 +287,7 @@ async function closeTicket(interaction) {
   setTimeout(
     () =>
       channel
-        .delete(`Ticket fermé par ${user.tag}`)
+        .delete(`Ticket ferme par ${user.tag}`)
         .catch(() => {}),
     5000
   );
@@ -327,8 +320,7 @@ async function handleTicketInteraction(interaction) {
       )
     ) {
       return interaction.reply({
-        content:
-          "❌ Tu dois avoir la permission **Gérer le serveur**.",
+        content: "Tu dois avoir la permission Gerer le serveur.",
         flags: MessageFlags.Ephemeral
       });
     }

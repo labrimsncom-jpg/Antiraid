@@ -9,7 +9,7 @@ const { showTicketConfig } = require("../../utils/tickets");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("ticket-config")
-    .setDescription("Configurer le système de tickets Holy RP")
+    .setDescription("Configurer le systÃ¨me de tickets Holy RP")
     .setDefaultMemberPermissions(
       PermissionFlagsBits.ManageGuild.toString()
     ),
@@ -21,8 +21,7 @@ module.exports = {
       )
     ) {
       return interaction.reply({
-        content:
-          "❌ Tu dois avoir la permission **Gérer le serveur**.",
+        content: "Tu dois avoir la permission GÃ©rer le serveur.",
         flags: MessageFlags.Ephemeral
       });
     }
