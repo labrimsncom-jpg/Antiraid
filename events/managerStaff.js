@@ -1,42 +1,26 @@
 const { Events } = require("discord.js");
 const db = require("../utils/db");
 
-function get(key, fallback) {
-  try {
-    const value = db.get(key);
-    return value == null ? fallback : value;
-  } catch {
-    return fallback;
-  }
+async function send(member, key, text) {
+  const s = db.getSettings(member.guild.id);
+
+  if (!s[key] || !s.hierarchyRoleId || !member.roles.cache.has(s.hierarchyRoleId)) return;
+
+  const c = await member.guild.channels.fetch(s[key]).catch(() => null);
+  if (c?.isTextBased()) await c.send({ content: text }).catch(() => {});
 }
 
 module.exports = [
   {
     name: Events.GuildMemberAdd,
     async execute(member) {
-      const channelId = get(`staffWelcome:${member.guild.id}`, null);
-      if (!channelId) return;
-
-      const channel = member.guild.channels.cache.get(channelId);
-      if (!channel || !channel.isTextBased()) return;
-
-      await channel.send(
-        `Bienvenue dans le staff ${member} !`
-      ).catch(() => {});
+      await send(member, "staffWelcomeChannelId", `Bienvenue staff ${member} !`);
     }
   },
   {
     name: Events.GuildMemberRemove,
     async execute(member) {
-      const channelId = get(`staffDepart:${member.guild.id}`, null);
-      if (!channelId) return;
-
-      const channel = member.guild.channels.cache.get(channelId);
-      if (!channel || !channel.isTextBased()) return;
-
-      await channel.send(
-        `${member.user?.tag || "Un membre"} a quitte le serveur.`
-      ).catch(() => {});
+      await send(member, "staffLeaveChannelId", `Depart staff : ${member}.`);
     }
   }
 ];
