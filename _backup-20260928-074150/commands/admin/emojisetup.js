@@ -1,4 +1,4 @@
-const {
+﻿const {
   SlashCommandBuilder,
   PermissionFlagsBits
 } = require("discord.js");
@@ -43,7 +43,7 @@ module.exports = {
       PermissionFlagsBits.ManageGuild
     )) {
       return interaction.reply({
-        content: "❌ Tu dois avoir la permission **Gérer le serveur**.",
+        content: "âŒ Tu dois avoir la permission **GÃ©rer le serveur**.",
         ephemeral: true
       });
     }
@@ -53,7 +53,7 @@ module.exports = {
     if (!me.permissions.has("ManageGuildExpressions")) {
       return interaction.reply({
         content:
-          "❌ Le bot doit avoir la permission **Gérer les expressions**.",
+          "âŒ Le bot doit avoir la permission **GÃ©rer les expressions**.",
         ephemeral: true
       });
     }
@@ -76,7 +76,7 @@ module.exports = {
       );
 
       if (!fs.existsSync(file)) {
-        results.push(`⚠️ ${name} : image introuvable`);
+        results.push(`âš ï¸ ${name} : image introuvable`);
         continue;
       }
 
@@ -85,7 +85,7 @@ module.exports = {
       );
 
       if (existing) {
-        results.push(`ℹ️ ${name} : déjà présent`);
+        results.push(`â„¹ï¸ ${name} : dÃ©jÃ  prÃ©sent`);
         continue;
       }
 
@@ -97,25 +97,25 @@ module.exports = {
         });
 
         results.push(
-          `✅ ${name} : <:${emoji.name}:${emoji.id}>`
+          `âœ… ${name} : <:${emoji.name}:${emoji.id}>`
         );
 
       } catch (error) {
 
         console.error(
-          `Erreur création ${name}:`,
+          `Erreur crÃ©ation ${name}:`,
           error
         );
 
         results.push(
-          `❌ ${name} : impossible à créer`
+          `âŒ ${name} : impossible Ã  crÃ©er`
         );
       }
     }
 
     await interaction.editReply({
       content:
-        "🎨 **Installation des emojis Holy RP terminée !**\n\n" +
+        "ðŸŽ¨ **Installation des emojis Holy RP terminÃ©e !**\n\n" +
         results.join("\n")
     });
   }

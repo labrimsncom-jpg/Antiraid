@@ -9,7 +9,6 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const db = require("../../utils/db");
-const { buildTicketPanel } = require("../../utils/tickets");
 const { COLORS, ok, fail, info } = require("../../utils/embeds");
 
 const salon = (o) =>
@@ -107,8 +106,15 @@ module.exports = {
         db.setSetting(guildId, "ticketRoleId", role?.id ?? null);
         db.setSetting(guildId, "ticketCategoryId", category?.id ?? null);
 
+        const embed = new EmbedBuilder()
+          .setColor(COLORS.primary)
+          .setTitle("🎫 Support")
+          .setDescription("Besoin d'aide ? Clique sur le bouton ci-dessous pour ouvrir un ticket privé avec l'équipe.");
+        const row = new ActionRowBuilder().addComponents(
+          new ButtonBuilder().setCustomId("ticket_open").setLabel("Ouvrir un ticket").setEmoji("🎫").setStyle(ButtonStyle.Primary)
+        );
         try {
-          await channel.send(buildTicketPanel(interaction.guild));
+          await channel.send({ embeds: [embed], components: [row] });
         } catch {
           return reply(fail(`Je ne peux pas écrire dans ${channel}. Vérifie mes permissions dans ce salon.`));
         }

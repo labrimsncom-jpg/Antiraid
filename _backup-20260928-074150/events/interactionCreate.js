@@ -1,4 +1,4 @@
-const {
+﻿const {
   Events,
   MessageFlags
 } = require("discord.js");
@@ -37,7 +37,13 @@ module.exports = {
         return;
       }
 
-      if (interaction.isMessageComponent() || interaction.isModalSubmit()) {
+      if (
+        interaction.isButton() ||
+        interaction.isStringSelectMenu() ||
+        interaction.isChannelSelectMenu() ||
+        interaction.isRoleSelectMenu() ||
+        interaction.isModalSubmit()
+      ) {
         const id = interaction.customId || "";
 
         if (id.startsWith("ticket_")) {

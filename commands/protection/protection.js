@@ -1,43 +1,38 @@
-﻿const {
-  SlashCommandBuilder,
-  PermissionFlagsBits,
-  EmbedBuilder
-} = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { getModule, state } = require("../../utils/shield");
+const { info } = require("../../utils/embeds");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("protection")
-    .setDescription("Afficher l'état des protections")
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild.toString()),
+    .setDescription("Affiche l'état de toutes les protections du serveur")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
   async execute(interaction) {
-    if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-      return interaction.reply({
-        content: "❌ Tu dois avoir la permission **Gérer le serveur**.",
-        ephemeral: true
-      });
-    }
+    const id = interaction.guild.id;
+    const raid = getModule(id, "antiraid");
+    const spam = getModule(id, "antispam");
+    const link = getModule(id, "antilink");
+    const raidActive = raid.raidUntil > Date.now();
 
-    const embed = new EmbedBuilder()
-      .setTitle("🛡️ Protections du serveur")
-      .setDescription(
-        [
-          "🟢 **Anti-Raid** — Disponible",
-          "🟢 **Anti-Spam** — Actif",
-          "🟢 **Anti-Link** — Actif",
-          "🟢 **Anti-Mass Mention** — Actif",
-          "🟢 **Protection Anti-Bot** — Active",
-          "🟢 **Protection des permissions** — Active",
-          "",
-          "⚙️ Utilise `/raidmode` pour gérer le mode raid."
-        ].join("\n")
-      )
-      .setColor(0x57F287)
-      .setTimestamp();
-
-    await interaction.reply({
-      embeds: [embed],
-      ephemeral: true
-    });
-  }
+    const embed = info("🛡️ Protections du serveur").addFields(
+      {
+        name: "Anti-raid",
+        value: `${state(raid.enabled)}\n${raid.joins} arrivées / ${raid.seconds}s → ${raid.action === "ban" ? "ban" : "kick"}${raidActive ? "\n🚨 **Mode raid actif**" : ""}`,
+        inline: true,
+      },
+      {
+        name: "Anti-spam",
+        value: `${state(spam.enabled)}\n${spam.messages} msg / ${spam.seconds}s • ${spam.mentions} mentions`,
+        inline: true,
+      },
+      {
+        name: "Anti-lien",
+        value: `${state(link.enabled)}\n${link.mode === "all" ? "Tous les liens" : "Invitations"}`,
+        inline: true,
+      }
+    );
+    embed.setFooter({ text: "Configure avec /antiraid, /antispam, /antilink, /bypass ou /automod." });
+    await interaction.reply({ embeds: [embed] });
+  },
 };

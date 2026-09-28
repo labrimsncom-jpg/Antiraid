@@ -1,4 +1,4 @@
-const {
+﻿const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
@@ -79,11 +79,15 @@ function voteSuggestion(guildId, id, userId, direction) {
   const h = settings(guildId);
   const item = h.suggestions?.[id];
   if (!item) return null;
+
   item.up = item.up || [];
   item.down = item.down || [];
+
   item.up = item.up.filter((x) => x !== userId);
   item.down = item.down.filter((x) => x !== userId);
+
   item[direction].push(userId);
+
   save(guildId, h);
   return item;
 }
@@ -91,7 +95,9 @@ function voteSuggestion(guildId, id, userId, direction) {
 function setSuggestionStatus(guildId, id, status) {
   const h = settings(guildId);
   const item = h.suggestions?.[id];
+
   if (!item) return null;
+
   item.status = status;
   save(guildId, h);
   return item;
@@ -105,15 +111,23 @@ function ticketOwner(channel) {
 async function transcript(channel) {
   const messages = [];
   let before;
+
   for (let page = 0; page < 20; page++) {
-    const batch = await channel.messages.fetch({ limit: 100, before }).catch(() => null);
+    const batch = await channel.messages
+      .fetch({ limit: 100, before })
+      .catch(() => null);
+
     if (!batch || batch.size === 0) break;
+
     messages.push(...batch.values());
+
     if (batch.size < 100) break;
+
     before = batch.last().id;
   }
 
   messages.reverse();
+
   return messages
     .map((m) => {
       const content = (m.content || "").replace(/\r?\n/g, " ");
@@ -125,35 +139,70 @@ async function transcript(channel) {
 function ticketPanel() {
   const embed = new EmbedBuilder()
     .setColor(0x5865f2)
-    .setTitle("Holy RP - Support")
+    .setTitle("Support")
     .setDescription("Besoin d'aide ? Ouvre un ticket prive avec l'equipe.");
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId("holy_ticket_open")
+      .setCustomId("ticket_open")
       .setLabel("Ouvrir un ticket")
       .setStyle(ButtonStyle.Primary)
   );
 
-  return { embeds: [embed], components: [row] };
+  return {
+    embeds: [embed],
+    components: [row],
+  };
 }
 
 function configEmbed(guild) {
   const s = settings(guild.id);
-  const mentionChannel = (id) => id ? `<#${id}>` : "Non configure";
-  const mentionRole = (id) => id ? `<@&${id}>` : "Non configure";
+
+  const mentionChannel = (id) =>
+    id ? `<#${id}>` : "Non configure";
+
+  const mentionRole = (id) =>
+    id ? `<@&${id}>` : "Non configure";
 
   return new EmbedBuilder()
     .setColor(0x5865f2)
-    .setTitle("Holy RP - Configuration")
+    .setTitle("Configuration")
     .addFields(
-      { name: "Logs", value: mentionChannel(db.getSettings(guild.id).logChannelId), inline: true },
-      { name: "Bienvenue", value: mentionChannel(db.getSettings(guild.id).welcomeChannelId), inline: true },
-      { name: "Autorole", value: mentionRole(db.getSettings(guild.id).autoroleId), inline: true },
-      { name: "Support tickets", value: mentionRole(db.getSettings(guild.id).ticketRoleId), inline: true },
-      { name: "Categorie tickets", value: mentionChannel(db.getSettings(guild.id).ticketCategoryId), inline: true },
-      { name: "Salon suggestions", value: mentionChannel(s.suggestions.channelId), inline: true },
-      { name: "XP active", value: s.xpEnabled === false ? "Non" : "Oui", inline: true }
+      {
+        name: "Logs",
+        value: mentionChannel(db.getSettings(guild.id).logChannelId),
+        inline: true,
+      },
+      {
+        name: "Bienvenue",
+        value: mentionChannel(db.getSettings(guild.id).welcomeChannelId),
+        inline: true,
+      },
+      {
+        name: "Autorole",
+        value: mentionRole(db.getSettings(guild.id).autoroleId),
+        inline: true,
+      },
+      {
+        name: "Support tickets",
+        value: mentionRole(db.getSettings(guild.id).ticketRoleId),
+        inline: true,
+      },
+      {
+        name: "Categorie tickets",
+        value: mentionChannel(db.getSettings(guild.id).ticketCategoryId),
+        inline: true,
+      },
+      {
+        name: "Salon suggestions",
+        value: mentionChannel(s.suggestions.channelId),
+        inline: true,
+      },
+      {
+        name: "XP active",
+        value: s.xpEnabled === false ? "Non" : "Oui",
+        inline: true,
+      }
     )
     .setTimestamp();
 }
