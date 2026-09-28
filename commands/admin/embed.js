@@ -1,17 +1,57 @@
-﻿const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const {
+    SlashCommandBuilder,
+    PermissionFlagsBits,
+    EmbedBuilder,
+    ChannelType
+} = require("discord.js");
 
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName("embed")
-    .setDescription("Envoyer un embed dans un salon"),
+    data: new SlashCommandBuilder()
+        .setName("embed")
+        .setDescription("Envoyer un embed dans un salon")
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
-  async execute(interaction) {
-    const embed = new EmbedBuilder()
-      .setTitle("/embed")
-      .setDescription("La commande **/embed** est disponible.")
-      .setColor(0x5865F2)
-      .setTimestamp();
+        .addChannelOption(option =>
+            option
+                .setName("salon")
+                .setDescription("Salon")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true)
+        )
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
-  }
+        .addStringOption(option =>
+            option
+                .setName("titre")
+                .setDescription("Titre")
+                .setRequired(true)
+        )
+
+        .addStringOption(option =>
+            option
+                .setName("texte")
+                .setDescription("Description")
+                .setRequired(true)
+        ),
+
+    async execute(interaction) {
+
+        const salon = interaction.options.getChannel("salon");
+        const titre = interaction.options.getString("titre");
+        const texte = interaction.options.getString("texte");
+
+        const embed = new EmbedBuilder()
+            .setColor(0x5865F2)
+            .setTitle(titre)
+            .setDescription(texte)
+            .setTimestamp();
+
+        await salon.send({
+            embeds: [embed]
+        });
+
+        return interaction.reply({
+            content: `Embed envoyé dans ${salon}.`,
+            ephemeral: true
+        });
+    }
 };
